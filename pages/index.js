@@ -10,29 +10,37 @@ export default function Home() {
   const [charactersList, setCharactersList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [ currentSortValue, setCurrentSortValue ] = useState('');
+  const [currentSortValue, setCurrentSortValue] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const BASE_API = 'https://rickandmortyapi.com/api/character/';
 
   useEffect(() => {
     getCharactersList(1);
   }, []);
 
   const getCharactersList = (pageNo) => {
-    axios.get(`https://rickandmortyapi.com/api/character/?page=${pageNo}`).
+    let apiPath = `${BASE_API}?page=${pageNo}`;
+    if (searchInput.length>0) {
+      apiPath = apiPath + `&name=${searchInput}`;
+    }
+    axios.get(apiPath).
       then((res) => {
         if (res) {
           setTotalRecords(res.data.info.count);
           // handleSort(currentSortValue,res.data.results,flag);
           // setCharactersList(_.cloneDeep(res.data.results));
-          if(currentSortValue === '') {
+          if (currentSortValue === '') {
             setCharactersList(_.cloneDeep(res.data.results));
           }
           else {
-            handleSort(currentSortValue,res.data.results);
+            handleSort(currentSortValue, res.data.results);
           }
         }
       })
       .catch((error) => {
         console.log(error);
+        setCharactersList([]);
+        setTotalRecords(0);
       })
   };
 
@@ -64,7 +72,7 @@ export default function Home() {
     if (sortValue === 'Ascending') {
       setCurrentSortValue('Ascending');
       if (list && list.length > 0) {
-        const newList = list.sort((a,b) => {
+        const newList = list.sort((a, b) => {
           return a.id - b.id;
         });
         setCharactersList(_.cloneDeep(newList));
@@ -73,7 +81,7 @@ export default function Home() {
     else if (sortValue === 'Descending') {
       setCurrentSortValue('Descending');
       if (list && list.length > 0) {
-        const newList = list.sort((a,b) => {
+        const newList = list.sort((a, b) => {
           return b.id - a.id;
         });
         setCharactersList(_.cloneDeep(newList));
@@ -92,7 +100,11 @@ export default function Home() {
   };
 
   const sortById = (pageNo) => {
-    axios.get(`https://rickandmortyapi.com/api/character/?page=${pageNo}`).
+    let apiPath = `${BASE_API}?page=${pageNo}`;
+    if (searchInput.length>0) {
+      apiPath = apiPath + `&name=${searchInput}`;
+    }
+    axios.get(apiPath).
       then((res) => {
         if (res) {
           setTotalRecords(res.data.info.count);
@@ -101,8 +113,38 @@ export default function Home() {
       })
       .catch((error) => {
         console.log(error);
+        setCharactersList([]);
+        setTotalRecords(0);
       })
   };
+
+  const searchByName = (event) => {
+    event.preventDefault();
+    let apiPath = `${BASE_API}?page=${1}`;
+    if (searchInput.length>0) {
+      apiPath = apiPath + `&name=${searchInput}`;
+    }
+    setCurrentPage(1);
+    setCurrentSortValue('');
+    axios.get(apiPath).
+        then((res) => {
+          if (res) {
+            setTotalRecords(res.data.info.count);
+            setCharactersList(_.cloneDeep(res.data.results));    
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          setCharactersList([]);
+          setTotalRecords(0);
+        });
+  };
+
+  const searchInputFunc = (event) => {
+     if(event.target.value) {
+      setSearchInput(event.target.value);
+     }
+  }
 
 
   return (
@@ -117,9 +159,10 @@ export default function Home() {
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
           crossOrigin='anonymous'
         />
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossOrigin="anonymous" />
       </Head>
 
-      <Header />
+      <Header searchByName={searchByName} searchInputFunc={searchInputFunc} searchInput={searchInput}/>
 
       <div className="container-fluid">
         <div className="row">
@@ -208,7 +251,7 @@ export default function Home() {
                   <h1 className="h2">Characters</h1>
                 </div>
                 <div className="col-md-2">
-                  <SortComponent sortList={sortList}/>
+                  <SortComponent sortList={sortList} currentSortValue={currentSortValue}/>
                 </div>
               </div>
             </div>
@@ -229,6 +272,7 @@ export default function Home() {
                     pageLimit={20}
                     pageNeighbours={1}
                     onPageChanged={onPageChanged}
+                    currPage={currentPage}
                   />
                 </div>
               </div>
@@ -254,153 +298,153 @@ export default function Home() {
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossOrigin="anonymous"></script>
 
       <style jsx>{`
-        .containers {
-          min-height: 100vh;
-        }
+      .containers {
+        min- height: 100vh;
+  }
 
         .pagination-row {
-          position: sticky;
-          bottom: 0;
-          background: #fff;
-          z-index: 999;
-          padding: 15px 0;
-        }
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    z - index: 999;
+    padding: 15px 0;
+  }
 
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
+  a {
+    color: inherit;
+    text - decoration: none;
+  }
 
         .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
+    color: #0070f3;
+    text - decoration: none;
+  }
 
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
+        .title a: hover,
+        .title a: focus,
+        .title a: active {
+    text - decoration: underline;
+  }
 
         .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
+    margin: 0;
+    line - height: 1.15;
+    font - size: 4rem;
+  }
 
         .title,
         .description {
-          text-align: center;
-        }
+    text - align: center;
+  }
 
-        // .description {
-        //   line-height: 1.5;
-        //   font-size: 1.5rem;
-        // }
+  // .description {
+  //   line-height: 1.5;
+  //   font-size: 1.5rem;
+  // }
 
-        // code {
-        //   background: #fafafa;
-        //   border-radius: 5px;
-        //   padding: 0.75rem;
-        //   font-size: 1.1rem;
-        //   font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-        //     DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        // }
+  // code {
+  //   background: #fafafa;
+  //   border-radius: 5px;
+  //   padding: 0.75rem;
+  //   font-size: 1.1rem;
+  //   font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
+  //     DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+  // }
 
-        // .grid {
-        //   display: flex;
-        //   align-items: center;
-        //   justify-content: center;
-        //   flex-wrap: wrap;
+  // .grid {
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  //   flex-wrap: wrap;
 
-        //   max-width: 800px;
-        //   margin-top: 3rem;
-        // }
+  //   max-width: 800px;
+  //   margin-top: 3rem;
+  // }
 
-        // .card {
-        //   margin: 1rem;
-        //   flex-basis: 45%;
-        //   padding: 1.5rem;
-        //   text-align: left;
-        //   color: inherit;
-        //   text-decoration: none;
-        //   border: 1px solid #eaeaea;
-        //   border-radius: 10px;
-        //   transition: color 0.15s ease, border-color 0.15s ease;
-        // }
+  // .card {
+  //   margin: 1rem;
+  //   flex-basis: 45%;
+  //   padding: 1.5rem;
+  //   text-align: left;
+  //   color: inherit;
+  //   text-decoration: none;
+  //   border: 1px solid #eaeaea;
+  //   border-radius: 10px;
+  //   transition: color 0.15s ease, border-color 0.15s ease;
+  // }
 
-        // .card:hover,
-        // .card:focus,
-        // .card:active {
-        //   color: #0070f3;
-        //   border-color: #0070f3;
-        // }
+  // .card:hover,
+  // .card:focus,
+  // .card:active {
+  //   color: #0070f3;
+  //   border-color: #0070f3;
+  // }
 
-        // .card h3 {
-        //   margin: 0 0 1rem 0;
-        //   font-size: 1.5rem;
-        // }
+  // .card h3 {
+  //   margin: 0 0 1rem 0;
+  //   font-size: 1.5rem;
+  // }
 
-        // .card p {
-        //   margin: 0;
-        //   font-size: 1.25rem;
-        //   line-height: 1.5;
-        // }
+  // .card p {
+  //   margin: 0;
+  //   font-size: 1.25rem;
+  //   line-height: 1.5;
+  // }
 
-        // .logo {
-        //   height: 1em;
-        // }
+  // .logo {
+  //   height: 1em;
+  // }
 
-        // main {
-          // padding: 5rem 0;
-          // flex: 1;
-          // display: flex;
-          // flex-direction: column;
-          // justify-content: center;
-          // align-items: center;
-        // }
+  // main {
+  // padding: 5rem 0;
+  // flex: 1;
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: center;
+  // align-items: center;
+  // }
 
-        // footer {
-        //   width: 100%;
-        //   height: 100px;
-        //   border-top: 1px solid #eaeaea;
-        //   display: flex;
-        //   justify-content: center;
-        //   align-items: center;
-        // }
+  // footer {
+  //   width: 100%;
+  //   height: 100px;
+  //   border-top: 1px solid #eaeaea;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  // }
 
-        // footer img {
-        //   margin-left: 0.5rem;
-        // }
+  // footer img {
+  //   margin-left: 0.5rem;
+  // }
 
-        // footer a {
-        //   display: flex;
-        //   justify-content: center;
-        //   align-items: center;
-        // }
+  // footer a {
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  // }
 
-        // @media (max-width: 600px) {
-        //   .grid {
-        //     width: 100%;
-        //     flex-direction: column;
-        //   }
-        // }
-      `}</style>
+  // @media (max-width: 600px) {
+  //   .grid {
+  //     width: 100%;
+  //     flex-direction: column;
+  //   }
+  // }
+  `}</style>
 
       <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
+  html,
+    body {
+    padding: 0;
+    margin: 0;
+    font - family: -apple - system, BlinkMacSystemFont, Segoe UI, Roboto,
+      Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
+        sans - serif;
+  }
 
         * {
-          box-sizing: border-box;
-        }
-      `}</style>
+    box- sizing: border - box;
+}
+`}</style>
     </div>
   )
 }

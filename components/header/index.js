@@ -1,11 +1,22 @@
 import React from 'react';
 
-const Header = () => {
+const Header = (props) => {
+    const { searchByName, searchInput, searchInputFunc } = props;
+
     return (
         <>
             <nav className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
                 <a className="navbar-brand col-sm-3 col-md-2 mr-0" href="#">RickyMorty</a>
-                <input className="form-control form-control-dark w-100" type="text" placeholder="Search By Name" aria-label="Search" />
+                <form className="w-100 form-position" onSubmit={searchByName}>
+                        <input type="text"
+                            // value={searchInput} 
+                            className="form-control form-control-dark w-100"
+                            onChange={searchInputFunc}
+                            placeholder="Search By Name"
+                            aria-label="Search" />
+                           <i className="fa fa-search" onClick={searchByName} aria-hidden="true"></i>
+
+                </form>
                 <ul className="navbar-nav px-3">
                     <li className="nav-item text-nowrap">
                         <a className="nav-link" href="#">Sign out</a>
@@ -40,6 +51,22 @@ const Header = () => {
                 .form-control:focus {
                     color: #495057;
                     background-color: #fff;
+                }
+                .form-position {
+                    position: relative
+                }
+                .fa-search {
+                    position: absolute;
+                    right: 1.6em;
+                    top: .5em;
+                    font-size: 1.4em;
+                    color: white !important;
+                }
+                .fa-search:hover {
+                    cursor: pointer;
+                }
+                .form-control.form-control-dark:focus + .fa-search {
+                    color: black !important;
                 }
         `}
             </style>
