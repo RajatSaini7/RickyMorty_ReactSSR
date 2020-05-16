@@ -13,10 +13,6 @@ export default function Home() {
 
   useEffect(() => {
     getCharactersList(1);
-    // then(res => {
-    //   setTotalRecords(res.info.count);
-    //   setCharactersList(res.results);
-    // });
   }, []);
 
   const getCharactersList = (pageNo) => {
