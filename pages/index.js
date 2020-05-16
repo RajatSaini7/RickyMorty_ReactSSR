@@ -1,21 +1,97 @@
 import Head from 'next/head';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Header, CardComponent, Pagination } from '../components';
+import { Header, CardComponent, Pagination, SortComponent } from '../components';
 
 
 
 export default function Home() {
 
   const [charactersList, setCharactersList] = useState([]);
-  // const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [ currentSortValue, setCurrentSortValue ] = useState('');
 
   useEffect(() => {
     getCharactersList(1);
   }, []);
 
   const getCharactersList = (pageNo) => {
+    axios.get(`https://rickandmortyapi.com/api/character/?page=${pageNo}`).
+      then((res) => {
+        if (res) {
+          setTotalRecords(res.data.info.count);
+          // handleSort(currentSortValue,res.data.results,flag);
+          // setCharactersList(_.cloneDeep(res.data.results));
+          if(currentSortValue === '') {
+            setCharactersList(_.cloneDeep(res.data.results));
+          }
+          else {
+            handleSort(currentSortValue,res.data.results);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  };
+
+  const onPageChanged = data => {
+    // console.log(data, "dsvfs");
+    const { currentPage, totalPages, pageLimit } = data;
+    setCurrentPage(currentPage);
+    const list = getCharactersList(currentPage);
+    // if (list) {
+    //   setTotalRecords(list.info.count);
+    //   setCharactersList(list.results);
+    // }
+  }
+
+  const sortList = (event) => {
+    setCurrentSortValue(event.target.value);
+    handleSort(event.target.value, charactersList);
+  }
+
+  const handleSort = (sortValue, originalLists) => {
+    // let sortValue;
+    // if(sortVal === '') {
+    //   sortValue = sortVal;
+    // }
+    // else {
+    //   sortValue = sortVal;
+    // }
+    let list = originalLists;
+    if (sortValue === 'Ascending') {
+      setCurrentSortValue('Ascending');
+      if (list && list.length > 0) {
+        const newList = list.sort((a,b) => {
+          return a.id - b.id;
+        });
+        setCharactersList(_.cloneDeep(newList));
+      }
+    }
+    else if (sortValue === 'Descending') {
+      setCurrentSortValue('Descending');
+      if (list && list.length > 0) {
+        const newList = list.sort((a,b) => {
+          return b.id - a.id;
+        });
+        setCharactersList(_.cloneDeep(newList));
+      }
+    }
+    // else if(flag == true) {
+    //   setCurrentSortValue('');
+    //   setCharactersList(_.cloneDeep(originalLists));
+    // }
+    else {
+      // setCurrentSortValue('');
+      // setCharactersList(_.cloneDeep(originalLists));
+      sortById(currentPage);
+      // getCharactersList(currentPage)
+    }
+  };
+
+  const sortById = (pageNo) => {
     axios.get(`https://rickandmortyapi.com/api/character/?page=${pageNo}`).
       then((res) => {
         if (res) {
@@ -27,16 +103,6 @@ export default function Home() {
         console.log(error);
       })
   };
-
-  const onPageChanged = data => {
-    // console.log(data, "dsvfs");
-    const { currentPage, totalPages, pageLimit } = data;
-    const list = getCharactersList(currentPage);
-    if (list) {
-      setTotalRecords(list.info.count);
-      setCharactersList(list.results);
-    }
-  }
 
 
   return (
@@ -135,17 +201,15 @@ export default function Home() {
           </nav>
 
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-              <h1 className="h2">Characters</h1>
-              <div className="btn-toolbar mb-2 mb-md-0">
-                <div className="btn-group mr-2">
-                  <button className="btn btn-sm btn-outline-secondary">Share</button>
-                  <button className="btn btn-sm btn-outline-secondary">Export</button>
+
+            <div className="container">
+              <div className="row justify-content-between align-items-center pb-2 mb-3">
+                <div className="col-md-2">
+                  <h1 className="h2">Characters</h1>
                 </div>
-                <button className="btn btn-sm btn-outline-secondary dropdown-toggle">
-                  <span data-feather="calendar"></span>
-                This week
-              </button>
+                <div className="col-md-2">
+                  <SortComponent sortList={sortList}/>
+                </div>
               </div>
             </div>
 
@@ -153,10 +217,10 @@ export default function Home() {
               <div className="row">
                 {totalRecords && totalRecords > 0 && charactersList.map(character => (
                   // <div classN="card-deck">
-                    <CardComponent
-                      key={character.id}
-                      character={character}
-                    />
+                  <CardComponent
+                    key={character.id}
+                    character={character}
+                  />
                   // </div>
                 ))}
               </div>
@@ -186,6 +250,10 @@ export default function Home() {
           <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
         </a>
       </footer> */}
+
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossOrigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossOrigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossOrigin="anonymous"></script>
 
       <style jsx>{`
         .containers {
