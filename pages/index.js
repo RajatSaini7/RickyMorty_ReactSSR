@@ -1,54 +1,186 @@
-import Head from 'next/head'
+import Head from 'next/head';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { Header, CardComponent, Pagination } from '../components';
+
+
 
 export default function Home() {
+
+  const [charactersList, setCharactersList] = useState([]);
+  // const [currentPage, setCurrentPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+
+  useEffect(() => {
+    getCharactersList(1);
+    // then(res => {
+    //   setTotalRecords(res.info.count);
+    //   setCharactersList(res.results);
+    // });
+  }, []);
+
+  const getCharactersList = (pageNo) => {
+    axios.get(`https://rickandmortyapi.com/api/character/?page=${pageNo}`).
+      then((res) => {
+        if (res) {
+          setTotalRecords(res.data.info.count);
+          setCharactersList(_.cloneDeep(res.data.results));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  };
+
+  const onPageChanged = data => {
+    // console.log(data, "dsvfs");
+    const { currentPage, totalPages, pageLimit } = data;
+    const list = getCharactersList(currentPage);
+    if (list) {
+      setTotalRecords(list.info.count);
+      setCharactersList(list.results);
+    }
+  }
+
+
   return (
-    <div className="container">
+    <div className="containers">
       <Head>
-        <title>Create Next App</title>
+        <title>RickyMorty App</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossOrigin='anonymous'
+        />
       </Head>
 
-      <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <Header />
 
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
+      <div className="container-fluid">
+        <div className="row">
 
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+          <nav className="col-md-2 d-none d-md-block bg-light sidebar">
+            <div className="sidebar-sticky">
+              <ul className="nav flex-column">
+                <li className="nav-item">
+                  <a className="nav-link active" href="#">
+                    <span data-feather="home"></span>
+                  Dashboard <span className="sr-only">(current)</span>
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#">
+                    <span data-feather="file"></span>
+                  Orders
+                </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#">
+                    <span data-feather="shopping-cart"></span>
+                  Products
+                </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#">
+                    <span data-feather="users"></span>
+                  Customers
+                </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#">
+                    <span data-feather="bar-chart-2"></span>
+                  Reports
+                </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#">
+                    <span data-feather="layers"></span>
+                  Integrations
+                </a>
+                </li>
+              </ul>
 
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+              <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span>Saved reports</span>
+                <a className="d-flex align-items-center text-muted" href="#">
+                  <span data-feather="plus-circle"></span>
+                </a>
+              </h6>
+              <ul className="nav flex-column mb-2">
+                <li className="nav-item">
+                  <a className="nav-link" href="#">
+                    <span data-feather="file-text"></span>
+                  Current month
+                </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#">
+                    <span data-feather="file-text"></span>
+                  Last quarter
+                </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#">
+                    <span data-feather="file-text"></span>
+                  Social engagement
+                </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#">
+                    <span data-feather="file-text"></span>
+                  Year-end sale
+                </a>
+                </li>
+              </ul>
+            </div>
+          </nav>
 
-          <a
-            href="https://github.com/zeit/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+          <main role="main" className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+              <h1 className="h2">Characters</h1>
+              <div className="btn-toolbar mb-2 mb-md-0">
+                <div className="btn-group mr-2">
+                  <button className="btn btn-sm btn-outline-secondary">Share</button>
+                  <button className="btn btn-sm btn-outline-secondary">Export</button>
+                </div>
+                <button className="btn btn-sm btn-outline-secondary dropdown-toggle">
+                  <span data-feather="calendar"></span>
+                This week
+              </button>
+              </div>
+            </div>
 
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+            <div className="container">
+              <div className="row">
+                {totalRecords && totalRecords > 0 && charactersList.map(character => (
+                  // <div classN="card-deck">
+                    <CardComponent
+                      key={character.id}
+                      character={character}
+                    />
+                  // </div>
+                ))}
+              </div>
+              <div className="row pagination-row">
+                <div className="col-md-12">
+                  <Pagination
+                    totalRecords={totalRecords}
+                    pageLimit={20}
+                    pageNeighbours={1}
+                    onPageChanged={onPageChanged}
+                  />
+                </div>
+              </div>
+            </div>
+          </main>
         </div>
-      </main>
+      </div>
 
-      <footer>
+
+      {/* <footer>
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
           target="_blank"
@@ -57,44 +189,19 @@ export default function Home() {
           Powered by{' '}
           <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
         </a>
-      </footer>
+      </footer> */}
 
       <style jsx>{`
-        .container {
+        .containers {
           min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
         }
 
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
+        .pagination-row {
+          position: sticky;
+          bottom: 0;
+          background: #fff;
+          z-index: 999;
+          padding: 15px 0;
         }
 
         a {
@@ -124,70 +231,98 @@ export default function Home() {
           text-align: center;
         }
 
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
+        // .description {
+        //   line-height: 1.5;
+        //   font-size: 1.5rem;
+        // }
 
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
+        // code {
+        //   background: #fafafa;
+        //   border-radius: 5px;
+        //   padding: 0.75rem;
+        //   font-size: 1.1rem;
+        //   font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
+        //     DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+        // }
 
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
+        // .grid {
+        //   display: flex;
+        //   align-items: center;
+        //   justify-content: center;
+        //   flex-wrap: wrap;
 
-          max-width: 800px;
-          margin-top: 3rem;
-        }
+        //   max-width: 800px;
+        //   margin-top: 3rem;
+        // }
 
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
+        // .card {
+        //   margin: 1rem;
+        //   flex-basis: 45%;
+        //   padding: 1.5rem;
+        //   text-align: left;
+        //   color: inherit;
+        //   text-decoration: none;
+        //   border: 1px solid #eaeaea;
+        //   border-radius: 10px;
+        //   transition: color 0.15s ease, border-color 0.15s ease;
+        // }
 
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
+        // .card:hover,
+        // .card:focus,
+        // .card:active {
+        //   color: #0070f3;
+        //   border-color: #0070f3;
+        // }
 
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
+        // .card h3 {
+        //   margin: 0 0 1rem 0;
+        //   font-size: 1.5rem;
+        // }
 
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
+        // .card p {
+        //   margin: 0;
+        //   font-size: 1.25rem;
+        //   line-height: 1.5;
+        // }
 
-        .logo {
-          height: 1em;
-        }
+        // .logo {
+        //   height: 1em;
+        // }
 
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
+        // main {
+          // padding: 5rem 0;
+          // flex: 1;
+          // display: flex;
+          // flex-direction: column;
+          // justify-content: center;
+          // align-items: center;
+        // }
+
+        // footer {
+        //   width: 100%;
+        //   height: 100px;
+        //   border-top: 1px solid #eaeaea;
+        //   display: flex;
+        //   justify-content: center;
+        //   align-items: center;
+        // }
+
+        // footer img {
+        //   margin-left: 0.5rem;
+        // }
+
+        // footer a {
+        //   display: flex;
+        //   justify-content: center;
+        //   align-items: center;
+        // }
+
+        // @media (max-width: 600px) {
+        //   .grid {
+        //     width: 100%;
+        //     flex-direction: column;
+        //   }
+        // }
       `}</style>
 
       <style jsx global>{`
