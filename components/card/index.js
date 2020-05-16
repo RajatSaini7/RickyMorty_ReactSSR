@@ -118,6 +118,9 @@ function dateTimeDifference(value) {
              }
              .card-img-overlay > h5 {
                 margin-bottom: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
              }
              .card-img-overlay > span {
                 font-size: .8em

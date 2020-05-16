@@ -21,8 +21,14 @@ export default function Home() {
       then((res) => {
         if (res) {
           setTotalRecords(res.data.info.count);
-          handleSort(currentSortValue,res.data.results);
+          // handleSort(currentSortValue,res.data.results,flag);
           // setCharactersList(_.cloneDeep(res.data.results));
+          if(currentSortValue === '') {
+            setCharactersList(_.cloneDeep(res.data.results));
+          }
+          else {
+            handleSort(currentSortValue,res.data.results);
+          }
         }
       })
       .catch((error) => {
@@ -46,14 +52,14 @@ export default function Home() {
     handleSort(event.target.value, charactersList);
   }
 
-  const handleSort = (sortVal, originalLists) => {
-    let sortValue;
-    if(sortVal.length !== 0) {
-      sortValue = sortVal;
-    }
-    else {
-      sortValue = currentSortValue;
-    }
+  const handleSort = (sortValue, originalLists) => {
+    // let sortValue;
+    // if(sortVal === '') {
+    //   sortValue = sortVal;
+    // }
+    // else {
+    //   sortValue = sortVal;
+    // }
     let list = originalLists;
     if (sortValue === 'Ascending') {
       setCurrentSortValue('Ascending');
@@ -73,10 +79,15 @@ export default function Home() {
         setCharactersList(_.cloneDeep(newList));
       }
     }
+    // else if(flag == true) {
+    //   setCurrentSortValue('');
+    //   setCharactersList(_.cloneDeep(originalLists));
+    // }
     else {
-      setCurrentSortValue('');
+      // setCurrentSortValue('');
       // setCharactersList(_.cloneDeep(originalLists));
       sortById(currentPage);
+      // getCharactersList(currentPage)
     }
   };
 
