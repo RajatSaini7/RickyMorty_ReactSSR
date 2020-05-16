@@ -8,8 +8,9 @@ import { Header, CardComponent, Pagination, SortComponent } from '../components'
 export default function Home() {
 
   const [charactersList, setCharactersList] = useState([]);
-  // const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [ currentSortValue, setCurrentSortValue ] = useState('');
 
   useEffect(() => {
     getCharactersList(1);
@@ -20,7 +21,8 @@ export default function Home() {
       then((res) => {
         if (res) {
           setTotalRecords(res.data.info.count);
-          setCharactersList(_.cloneDeep(res.data.results));
+          handleSort(currentSortValue,res.data.results);
+          // setCharactersList(_.cloneDeep(res.data.results));
         }
       })
       .catch((error) => {
@@ -31,15 +33,64 @@ export default function Home() {
   const onPageChanged = data => {
     // console.log(data, "dsvfs");
     const { currentPage, totalPages, pageLimit } = data;
+    setCurrentPage(currentPage);
     const list = getCharactersList(currentPage);
-    if (list) {
-      setTotalRecords(list.info.count);
-      setCharactersList(list.results);
-    }
+    // if (list) {
+    //   setTotalRecords(list.info.count);
+    //   setCharactersList(list.results);
+    // }
   }
 
-  const handleSort = (event, order) => {
-        
+  const sortList = (event) => {
+    setCurrentSortValue(event.target.value);
+    handleSort(event.target.value, charactersList);
+  }
+
+  const handleSort = (sortVal, originalLists) => {
+    let sortValue;
+    if(sortVal.length !== 0) {
+      sortValue = sortVal;
+    }
+    else {
+      sortValue = currentSortValue;
+    }
+    let list = originalLists;
+    if (sortValue === 'Ascending') {
+      setCurrentSortValue('Ascending');
+      if (list && list.length > 0) {
+        const newList = list.sort((a,b) => {
+          return a.id - b.id;
+        });
+        setCharactersList(_.cloneDeep(newList));
+      }
+    }
+    else if (sortValue === 'Descending') {
+      setCurrentSortValue('Descending');
+      if (list && list.length > 0) {
+        const newList = list.sort((a,b) => {
+          return b.id - a.id;
+        });
+        setCharactersList(_.cloneDeep(newList));
+      }
+    }
+    else {
+      setCurrentSortValue('');
+      // setCharactersList(_.cloneDeep(originalLists));
+      sortById(currentPage);
+    }
+  };
+
+  const sortById = (pageNo) => {
+    axios.get(`https://rickandmortyapi.com/api/character/?page=${pageNo}`).
+      then((res) => {
+        if (res) {
+          setTotalRecords(res.data.info.count);
+          setCharactersList(_.cloneDeep(res.data.results));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
   };
 
 
@@ -143,10 +194,10 @@ export default function Home() {
             <div className="container">
               <div className="row justify-content-between align-items-center pb-2 mb-3">
                 <div className="col-md-2">
-                   <h1 className="h2">Characters</h1>
+                  <h1 className="h2">Characters</h1>
                 </div>
                 <div className="col-md-2">
-                <SortComponent handleSort={handleSort}/>
+                  <SortComponent sortList={sortList}/>
                 </div>
               </div>
             </div>

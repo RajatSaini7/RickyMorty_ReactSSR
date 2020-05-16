@@ -1,12 +1,12 @@
 import React from 'react';
 
 const SortComponent = (props) => {
-    const { handleSort } = props;
-
+    const { sortList } = props;
+    const defaultVal = null;
     return (
         <>
-            <select className="custom-select">
-                <option selected>Sort By Id</option>
+            <select className="custom-select" onChange={sortList}>
+                <option value="">Sort By Id</option>
                 <option value="Ascending">Ascending</option>
                 <option value="Descending">Descending</option>
             </select>
