@@ -216,12 +216,10 @@ export default function Home() {
             <div className="container">
               <div className="row">
                 {totalRecords && totalRecords > 0 && charactersList.map(character => (
-                  // <div classN="card-deck">
                   <CardComponent
                     key={character.id}
                     character={character}
                   />
-                  // </div>
                 ))}
               </div>
               <div className="row pagination-row">
