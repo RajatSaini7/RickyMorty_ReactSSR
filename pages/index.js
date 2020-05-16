@@ -137,15 +137,16 @@ export default function Home() {
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
               <h1 className="h2">Characters</h1>
-              <div className="btn-toolbar mb-2 mb-md-0">
-                <div className="btn-group mr-2">
-                  <button className="btn btn-sm btn-outline-secondary">Share</button>
-                  <button className="btn btn-sm btn-outline-secondary">Export</button>
+              <div className="dropdown show">
+                <a className="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Dropdown link
+  </a>
+
+                <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a className="dropdown-item" href="#">Action</a>
+                  <a className="dropdown-item" href="#">Another action</a>
+                  <a className="dropdown-item" href="#">Something else here</a>
                 </div>
-                <button className="btn btn-sm btn-outline-secondary dropdown-toggle">
-                  <span data-feather="calendar"></span>
-                This week
-              </button>
               </div>
             </div>
 
@@ -153,10 +154,10 @@ export default function Home() {
               <div className="row">
                 {totalRecords && totalRecords > 0 && charactersList.map(character => (
                   // <div classN="card-deck">
-                    <CardComponent
-                      key={character.id}
-                      character={character}
-                    />
+                  <CardComponent
+                    key={character.id}
+                    character={character}
+                  />
                   // </div>
                 ))}
               </div>

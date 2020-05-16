@@ -102,6 +102,10 @@ function dateTimeDifference(value) {
                 border-bottom-left-radius: 6px;
                 border-bottom-right-radius: 6px;  
              }
+             div.card:hover {
+                 cursor: pointer;
+                 border: 2px solid #000000;
+             }
              .card-img {
                  border-radius: 0
              }
