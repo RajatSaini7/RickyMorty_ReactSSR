@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Header, CardComponent, Pagination } from '../components';
+import { Header, CardComponent, Pagination, SortComponent } from '../components';
 
 
 
@@ -37,6 +37,10 @@ export default function Home() {
       setCharactersList(list.results);
     }
   }
+
+  const handleSort = (event, order) => {
+        
+  };
 
 
   return (
@@ -135,17 +139,14 @@ export default function Home() {
           </nav>
 
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-              <h1 className="h2">Characters</h1>
-              <div className="dropdown show">
-                <a className="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Dropdown link
-  </a>
 
-                <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <a className="dropdown-item" href="#">Action</a>
-                  <a className="dropdown-item" href="#">Another action</a>
-                  <a className="dropdown-item" href="#">Something else here</a>
+            <div className="container">
+              <div className="row justify-content-between align-items-center pb-2 mb-3">
+                <div className="col-md-2">
+                   <h1 className="h2">Characters</h1>
+                </div>
+                <div className="col-md-2">
+                <SortComponent handleSort={handleSort}/>
                 </div>
               </div>
             </div>
@@ -187,6 +188,10 @@ export default function Home() {
           <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
         </a>
       </footer> */}
+
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossOrigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossOrigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossOrigin="anonymous"></script>
 
       <style jsx>{`
         .containers {
