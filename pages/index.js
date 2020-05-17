@@ -18,9 +18,6 @@ export default function Home() {
   const [filterList, setFilterList] = useState({
     // tags that render are inside of 'passingTags' object.
     passingTags: {
-      search: {
-        inputTerm: '',
-      },
       gender: {},
       species: {},
     },
@@ -31,11 +28,60 @@ export default function Home() {
     getCharactersList(1);
   }, []);
 
-  const getCharactersList = (pageNo) => {
-    let apiPath = `${BASE_API}?page=${pageNo}`;
+  // useEffect(() => {
+  //   (async () => {
+  //     const collectedTrueKeys = await filterClientSideData(filterList);
+  //     const filteredArray = await multiPropsFilter(
+  //       charactersList,
+  //       collectedTrueKeys
+  //     );
+  //     setCharactersList(filteredArray);
+  //   })();
+  // }, [filterList]);
+
+  const multiPropsFilter = (products, filters) => {
+    const filterKeys = Object.keys(filters);
+    return products.filter((product) => {
+      return filterKeys.every((key) => {
+        if (!filters[key].length) return true;
+        // Loops again if product[key] is an array (for material attribute).
+        if (Array.isArray(product[key])) {
+          return product[key].some((keyEle) => filters[key].includes(keyEle));
+        }
+        return filters[key].includes(product[key]);
+      });
+    });
+  };
+
+  const getAPIPath = (apiPth) => {
+    let apiPath = apiPth;
     if (searchInput.length > 0) {
       apiPath = apiPath + `&name=${searchInput}`;
     }
+    if (
+      Object.keys(filterList) &&
+      Object.keys(filterList.passingTags).length > 0
+    ) {
+      const { gender, species } = filterList.passingTags;
+      for (let genderKey in gender) {
+        if (gender[genderKey]) {
+          apiPath = apiPath + `&gender=${genderKey}`;
+        }
+      }
+      for (let speciesKey in species) {
+        if (species[speciesKey]) {
+          apiPath = apiPath + `&species=${speciesKey}`;
+        }
+      }
+    }
+
+    return apiPath;
+  };
+
+  const getCharactersList = async (pageNo) => {
+    let apiPath = `${BASE_API}?page=${pageNo}`;
+
+    apiPath = await getAPIPath(apiPath);
     axios
       .get(apiPath)
       .then((res) => {
@@ -192,6 +238,45 @@ export default function Home() {
     }));
   };
 
+  const onFilterClicked = (e, filterProp) => {
+    const name = e.target.name;
+    setFilterList((prevState) => ({
+      passingTags: {
+        ...prevState.passingTags,
+        [filterProp]: {
+          ...prevState.passingTags[filterProp],
+          [name]: !prevState.passingTags[filterProp][name],
+        },
+      },
+    }));
+
+    // getCharactersList(currentPage);
+    // const collectedTrueKeys = await filterClientSideData(filterList);
+    // debugger;
+    // const filteredArray = await multiPropsFilter(
+    //   charactersList,
+    //   collectedTrueKeys
+    // );
+    // setCharactersList(filteredArray);
+  };
+
+  const filterClientSideData = () => {
+    const collectedTrueKeys = {
+      gender: [],
+      species: [],
+    };
+
+    const { gender, species } = filterList.passingTags;
+    for (let speciesKey in species) {
+      if (species[speciesKey]) collectedTrueKeys.species.push(speciesKey);
+    }
+    for (let genderKey in gender) {
+      if (gender[genderKey]) collectedTrueKeys.gender.push(genderKey);
+    }
+    // console.log(collectedTrueKeys, 'vsdsdvsd');
+    return collectedTrueKeys;
+  };
+
   return (
     <div className="containers">
       <Head>
@@ -224,19 +309,25 @@ export default function Home() {
 
       <div className="container-fluid">
         <div className="row">
-          <nav className="col-md-2 d-none d-md-block bg-light sidebar">
+          <nav className="col-md-2 col-sm-2 d-md-block bg-light sidebar">
             <div className="sidebar-sticky">
-              <SideBar filterList={filterList} />
+              <SideBar
+                filterList={filterList}
+                onFilterClicked={onFilterClicked}
+              />
             </div>
           </nav>
 
-          <main role="main" className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+          <main
+            role="main"
+            className="col-md-10 col-sm-10 ml-sm-auto col-lg-10 pt-3 px-4"
+          >
             <div className="container">
               <div className="row justify-content-between align-items-center pb-2 mb-3">
                 <div className="col-md-2">
                   <h1 className="h2">Characters</h1>
                 </div>
-                <div className="col-md-2">
+                <div className="col-md-3">
                   <SortComponent
                     sortList={sortList}
                     currentSortValue={currentSortValue}
@@ -247,11 +338,26 @@ export default function Home() {
 
             <div className="container">
               <div className="row">
-                {totalRecords &&
-                  totalRecords > 0 &&
-                  charactersList.map((character) => (
-                    <CardComponent key={character.id} character={character} />
-                  ))}
+                {totalRecords > 0 &&
+                  charactersList
+                    .filter((el) => {
+                      const obj = filterClientSideData();
+                      if (
+                        !(obj.gender?.length > 0 || obj.species?.length > 0)
+                      ) {
+                        return el;
+                      } else {
+                        if (
+                          obj.gender.indexOf(el.gender) >= 0 ||
+                          obj.species.indexOf(el.species) >= 0
+                        ) {
+                          return el;
+                        }
+                      }
+                    })
+                    .map((character) => (
+                      <CardComponent key={character.id} character={character} />
+                    ))}
               </div>
               <div className="row pagination-row">
                 <div className="col-md-12">
@@ -348,13 +454,25 @@ export default function Home() {
   
   .sidebar-sticky {
     position: -webkit-sticky;
-    position: sticky;
+    position: relative;
     top: 48px; /* Height of navbar */
     height: calc(100vh - 48px);
     padding-top: .5rem;
     overflow-x: hidden;
     overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
   }
+
+  @media (max-width: 767.98px) { 
+    .sidebar {
+      position: relative;
+    }
+    
+    .sidebar-sticky {
+      top: 0px;
+      height: 100%;
+    }
+
+   }
   
 
   // .description {

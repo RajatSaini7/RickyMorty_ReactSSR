@@ -1,66 +1,11 @@
 import React, { useEffect } from 'react';
 
 const SideBar = (props) => {
-  const { filterList } = props;
+  const { filterList, onFilterClicked } = props;
 
-  const rowFilter = (keyObj) => {
-    let arr1 = [];
-
-    for (const property1 in keyObj) {
-      arr1.push(
-        <div
-          id="collapseOne"
-          className="collapse show"
-          aria-labelledby="headingOne"
-          data-parent="#accordion"
-        >
-          <div className="card-body">
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                defaultChecked={[keyObj][property1]}
-                value="true"
-                id="defaultCheck1"
-              />
-              <label className="form-check-label" htmlFor="defaultCheck1">
-                {property1}
-              </label>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    return arr1;
-  };
-
-  const createHeaderFilter = (filterList) => {
-    let arr = [];
-
-    for (const property in filterList) {
-      if ([property] === 'gender') {
-        arr.push(
-          <div className="card">
-            <div
-              className="card-header px-0 pt-0 pb-0"
-              data-toggle="collapse"
-              data-target="#collapseOne"
-              aria-expanded="true"
-              aria-controls="collapseOne"
-              id="headingOne"
-            >
-              <h5 className="mb-0">
-                <button className="btn btn-link">Gender</button>
-              </h5>
-            </div>
-            {rowFilter(filterList[property])}
-          </div>
-        );
-      }
-    }
-    return arr;
-  };
+  useEffect(() => {
+    console.log(filterList, 'filterList');
+  }, [filterList]);
 
   return (
     <>
@@ -69,79 +14,91 @@ const SideBar = (props) => {
       </h6>
       <div id="accordion" className="px-3 mb-4 mb-1 mt-3">
         <div className="card">
-          <div
-            className="card-header px-0 pt-0 pb-0"
-            data-toggle="collapse"
-            data-target="#collapseOne"
-            aria-expanded="true"
-            aria-controls="collapseOne"
-            id="headingOne"
-          >
+          <div className="card-header px-0 pt-0 pb-0" id="headingOne">
             <h5 className="mb-0">
-              <button className="btn btn-link">Gender</button>
+              <button
+                className="btn btn-link"
+                data-toggle="collapse"
+                data-target="#collapseOne"
+                aria-expanded="true"
+                aria-controls="collapseOne"
+              >
+                Gender
+              </button>
             </h5>
           </div>
-          {Object.keys(filterList.passingTags.gender).map((el) => (
-            <div
-              id="collapseOne"
-              className="collapse show"
-              aria-labelledby="headingOne"
-              data-parent="#accordion"
-            >
-              <div className="card-body">
+          <div
+            id="collapseOne"
+            className="collapse show"
+            aria-labelledby="headingOne"
+            data-parent="#accordion"
+          >
+            {Object.keys(filterList.passingTags.gender).map((el, index) => (
+              <div className="card-body" key={`gender_${index}`}>
                 <div className="form-check">
                   <input
                     className="form-check-input"
                     type="checkbox"
                     defaultChecked={filterList.passingTags.gender[el]}
+                    onChange={(e) => onFilterClicked(e, 'gender')}
                     value="true"
-                    id="defaultCheck1"
+                    id={`gender${index}`}
+                    name={el}
                   />
-                  <label className="form-check-label" htmlFor="defaultCheck1">
+                  <label
+                    className="form-check-label"
+                    htmlFor={`gender${index}`}
+                  >
                     {el}
                   </label>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         <div className="card">
-          <div
-            className="card-header px-0 pt-0 pb-0"
-            data-toggle="collapse"
-            data-target="#collapseTwo"
-            aria-expanded="true"
-            aria-controls="collapseTwo"
-            id="headingTwo"
-          >
+          <div className="card-header px-0 pt-0 pb-0" id="headingTwo">
             <h5 className="mb-0">
-              <button className="btn btn-link">Species</button>
+              <button
+                className="btn btn-link"
+                data-toggle="collapse"
+                data-target="#collapseTwo"
+                aria-expanded="true"
+                aria-controls="collapseTwo"
+              >
+                Species
+              </button>
             </h5>
           </div>
-          {Object.keys(filterList.passingTags.species).map((el) => (
-            <div
-              id="collapseTwo"
-              className="collapse show"
-              aria-labelledby="headingTwo"
-              data-parent="#accordion"
-            >
-              <div className="card-body">
+          <div
+            id="collapseTwo"
+            className="collapse show"
+            aria-labelledby="headingTwo"
+            data-parent="#accordion"
+          >
+            {Object.keys(filterList.passingTags.species).map((el, index) => (
+              <div className="card-body" key={`species_${index}`}>
                 <div className="form-check">
                   <input
                     className="form-check-input"
                     type="checkbox"
                     defaultChecked={filterList.passingTags.species[el]}
+                    onChange={(e) => onFilterClicked(e, 'species')}
                     value="true"
-                    id="defaultCheck2"
+                    id={`species${index}`}
+                    name={el}
                   />
-                  <label className="form-check-label" htmlFor="defaultCheck2">
+                  <label
+                    className="form-check-label"
+                    htmlFor={`species${index}`}
+                  >
                     {el}
                   </label>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
       <style jsx>{`
@@ -159,6 +116,10 @@ const SideBar = (props) => {
         }
         .card-body {
           padding: 0.5em;
+        }
+        .card-body .form-check {
+          overflow: hidden;
+          word-break: break-word;
         }
         //   .nav .nav-link {
         //     font-weight: 500;
