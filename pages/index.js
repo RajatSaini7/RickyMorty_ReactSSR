@@ -1,28 +1,29 @@
 import Head from 'next/head';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Header, CardComponent, Pagination, SortComponent, SideBar } from '../components';
-
-
+import {
+  Header,
+  CardComponent,
+  Pagination,
+  SortComponent,
+  SideBar,
+} from '../components';
 
 export default function Home() {
-
   const [charactersList, setCharactersList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const [currentSortValue, setCurrentSortValue] = useState('');
   const [searchInput, setSearchInput] = useState('');
-  const [ filterList, setFilterList ] = useState({
-        // tags that render are inside of 'passingTags' object.
-        passingTags: {
-          search: {
-            inputTerm: ""
-          },
-          gender: {
-          },
-          species: {
-          }
-        }
+  const [filterList, setFilterList] = useState({
+    // tags that render are inside of 'passingTags' object.
+    passingTags: {
+      search: {
+        inputTerm: '',
+      },
+      gender: {},
+      species: {},
+    },
   });
   const BASE_API = 'https://rickandmortyapi.com/api/character/';
 
@@ -35,19 +36,19 @@ export default function Home() {
     if (searchInput.length > 0) {
       apiPath = apiPath + `&name=${searchInput}`;
     }
-    axios.get(apiPath).
-      then((res) => {
+    axios
+      .get(apiPath)
+      .then((res) => {
         if (res) {
           setTotalRecords(res.data.info.count);
-          if(res.data.results.length > 0) {
+          if (res.data.results.length > 0) {
             getSpecies(res.data.results);
           }
           // handleSort(currentSortValue,res.data.results,flag);
           // setCharactersList(_.cloneDeep(res.data.results));
           if (currentSortValue === '') {
             setCharactersList(_.cloneDeep(res.data.results));
-          }
-          else {
+          } else {
             handleSort(currentSortValue, res.data.results);
           }
         }
@@ -56,10 +57,10 @@ export default function Home() {
         console.log(error);
         setCharactersList([]);
         setTotalRecords(0);
-      })
+      });
   };
 
-  const onPageChanged = data => {
+  const onPageChanged = (data) => {
     // console.log(data, "dsvfs");
     const { currentPage, totalPages, pageLimit } = data;
     setCurrentPage(currentPage);
@@ -68,12 +69,12 @@ export default function Home() {
     //   setTotalRecords(list.info.count);
     //   setCharactersList(list.results);
     // }
-  }
+  };
 
   const sortList = (event) => {
     setCurrentSortValue(event.target.value);
     handleSort(event.target.value, charactersList);
-  }
+  };
 
   const handleSort = (sortValue, originalLists) => {
     // let sortValue;
@@ -92,8 +93,7 @@ export default function Home() {
         });
         setCharactersList(_.cloneDeep(newList));
       }
-    }
-    else if (sortValue === 'Descending') {
+    } else if (sortValue === 'Descending') {
       setCurrentSortValue('Descending');
       if (list && list.length > 0) {
         const newList = list.sort((a, b) => {
@@ -119,8 +119,9 @@ export default function Home() {
     if (searchInput.length > 0) {
       apiPath = apiPath + `&name=${searchInput}`;
     }
-    axios.get(apiPath).
-      then((res) => {
+    axios
+      .get(apiPath)
+      .then((res) => {
         if (res) {
           setTotalRecords(res.data.info.count);
           setCharactersList(_.cloneDeep(res.data.results));
@@ -130,7 +131,7 @@ export default function Home() {
         console.log(error);
         setCharactersList([]);
         setTotalRecords(0);
-      })
+      });
   };
 
   const searchByName = (event) => {
@@ -141,12 +142,13 @@ export default function Home() {
     }
     setCurrentPage(1);
     setCurrentSortValue('');
-    axios.get(apiPath).
-      then((res) => {
+    axios
+      .get(apiPath)
+      .then((res) => {
         if (res) {
           setTotalRecords(res.data.info.count);
           setCharactersList(_.cloneDeep(res.data.results));
-          if(res.data.results.length > 0) {
+          if (res.data.results.length > 0) {
             getSpecies(res.data.results);
           }
         }
@@ -159,87 +161,97 @@ export default function Home() {
   };
 
   const searchInputFunc = (event) => {
-    if (event.target.value) {
-      setSearchInput(event.target.value);
-    }
-  }
+    setSearchInput(event.target.value);
+  };
 
   const getSpecies = (dataList) => {
-     let charList = dataList;
-     let genderObj = {};
-     let speciesObj = {};
+    let charList = dataList;
+    let genderObj = {};
+    let speciesObj = {};
 
-     const speciesList = [...new Set(charList.map(item => item.species))];
-     const genderList = [...new Set(charList.map(item => item.gender))];
-       
-    if(speciesList.length > 0) {
-        speciesList.forEach(ele => {
-          speciesObj[ele] = false;
-        });
+    const speciesList = [...new Set(charList.map((item) => item.species))];
+    const genderList = [...new Set(charList.map((item) => item.gender))];
+
+    if (speciesList.length > 0) {
+      speciesList.forEach((ele) => {
+        speciesObj[ele] = false;
+      });
     }
-    if(genderList.length > 0) {
-      genderList.forEach(ele => {
+    if (genderList.length > 0) {
+      genderList.forEach((ele) => {
         genderObj[ele] = false;
-       });
-   }
+      });
+    }
 
-   setFilterList(prevState => ({
+    setFilterList((prevState) => ({
       passingTags: {
         ...prevState.passingTags,
         gender: genderObj,
-        species: speciesObj
-      }
-   }));
-  }
-
+        species: speciesObj,
+      },
+    }));
+  };
 
   return (
     <div className="containers">
       <Head>
         <title>RickyMorty App</title>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="stylesheet"
+        <link
+          rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-          crossOrigin='anonymous'
+          crossOrigin="anonymous"
         />
-        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossOrigin="anonymous" />
+        <link
+          href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+          crossOrigin="anonymous"
+        />
       </Head>
 
-      <Header searchByName={searchByName} searchInputFunc={searchInputFunc} searchInput={searchInput} />
+      <Header
+        searchByName={searchByName}
+        searchInputFunc={searchInputFunc}
+        searchInput={searchInput}
+      />
 
       <div className="container-fluid">
         <div className="row">
-
           <nav className="col-md-2 d-none d-md-block bg-light sidebar">
             <div className="sidebar-sticky">
-              <SideBar filterList={filterList}/>
+              <SideBar filterList={filterList} />
             </div>
           </nav>
 
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-
             <div className="container">
               <div className="row justify-content-between align-items-center pb-2 mb-3">
                 <div className="col-md-2">
                   <h1 className="h2">Characters</h1>
                 </div>
                 <div className="col-md-2">
-                  <SortComponent sortList={sortList} currentSortValue={currentSortValue} />
+                  <SortComponent
+                    sortList={sortList}
+                    currentSortValue={currentSortValue}
+                  />
                 </div>
               </div>
             </div>
 
             <div className="container">
               <div className="row">
-                {totalRecords && totalRecords > 0 && charactersList.map(character => (
-                  <CardComponent
-                    key={character.id}
-                    character={character}
-                  />
-                ))}
+                {totalRecords &&
+                  totalRecords > 0 &&
+                  charactersList.map((character) => (
+                    <CardComponent key={character.id} character={character} />
+                  ))}
               </div>
               <div className="row pagination-row">
                 <div className="col-md-12">
@@ -257,7 +269,6 @@ export default function Home() {
         </div>
       </div>
 
-
       {/* <footer>
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
@@ -269,9 +280,21 @@ export default function Home() {
         </a>
       </footer> */}
 
-      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossOrigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossOrigin="anonymous"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossOrigin="anonymous"></script>
+      <script
+        src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossOrigin="anonymous"
+      ></script>
+      <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossOrigin="anonymous"
+      ></script>
+      <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossOrigin="anonymous"
+      ></script>
 
       <style jsx>{`
       .containers {
@@ -443,5 +466,5 @@ export default function Home() {
 }
 `}</style>
     </div>
-  )
+  );
 }
