@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Header, CardComponent, Pagination, SortComponent } from '../components';
+import { Header, CardComponent, Pagination, SortComponent, SideBar } from '../components';
 
 
 
@@ -20,7 +20,7 @@ export default function Home() {
 
   const getCharactersList = (pageNo) => {
     let apiPath = `${BASE_API}?page=${pageNo}`;
-    if (searchInput.length>0) {
+    if (searchInput.length > 0) {
       apiPath = apiPath + `&name=${searchInput}`;
     }
     axios.get(apiPath).
@@ -101,7 +101,7 @@ export default function Home() {
 
   const sortById = (pageNo) => {
     let apiPath = `${BASE_API}?page=${pageNo}`;
-    if (searchInput.length>0) {
+    if (searchInput.length > 0) {
       apiPath = apiPath + `&name=${searchInput}`;
     }
     axios.get(apiPath).
@@ -121,29 +121,29 @@ export default function Home() {
   const searchByName = (event) => {
     event.preventDefault();
     let apiPath = `${BASE_API}?page=${1}`;
-    if (searchInput.length>0) {
+    if (searchInput.length > 0) {
       apiPath = apiPath + `&name=${searchInput}`;
     }
     setCurrentPage(1);
     setCurrentSortValue('');
     axios.get(apiPath).
-        then((res) => {
-          if (res) {
-            setTotalRecords(res.data.info.count);
-            setCharactersList(_.cloneDeep(res.data.results));    
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          setCharactersList([]);
-          setTotalRecords(0);
-        });
+      then((res) => {
+        if (res) {
+          setTotalRecords(res.data.info.count);
+          setCharactersList(_.cloneDeep(res.data.results));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setCharactersList([]);
+        setTotalRecords(0);
+      });
   };
 
   const searchInputFunc = (event) => {
-     if(event.target.value) {
+    if (event.target.value) {
       setSearchInput(event.target.value);
-     }
+    }
   }
 
 
@@ -162,84 +162,14 @@ export default function Home() {
         <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossOrigin="anonymous" />
       </Head>
 
-      <Header searchByName={searchByName} searchInputFunc={searchInputFunc} searchInput={searchInput}/>
+      <Header searchByName={searchByName} searchInputFunc={searchInputFunc} searchInput={searchInput} />
 
       <div className="container-fluid">
         <div className="row">
 
           <nav className="col-md-2 d-none d-md-block bg-light sidebar">
             <div className="sidebar-sticky">
-              <ul className="nav flex-column">
-                <li className="nav-item">
-                  <a className="nav-link active" href="#">
-                    <span data-feather="home"></span>
-                  Dashboard <span className="sr-only">(current)</span>
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="#">
-                    <span data-feather="file"></span>
-                  Orders
-                </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="#">
-                    <span data-feather="shopping-cart"></span>
-                  Products
-                </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="#">
-                    <span data-feather="users"></span>
-                  Customers
-                </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="#">
-                    <span data-feather="bar-chart-2"></span>
-                  Reports
-                </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="#">
-                    <span data-feather="layers"></span>
-                  Integrations
-                </a>
-                </li>
-              </ul>
-
-              <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                <span>Saved reports</span>
-                <a className="d-flex align-items-center text-muted" href="#">
-                  <span data-feather="plus-circle"></span>
-                </a>
-              </h6>
-              <ul className="nav flex-column mb-2">
-                <li className="nav-item">
-                  <a className="nav-link" href="#">
-                    <span data-feather="file-text"></span>
-                  Current month
-                </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="#">
-                    <span data-feather="file-text"></span>
-                  Last quarter
-                </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="#">
-                    <span data-feather="file-text"></span>
-                  Social engagement
-                </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="#">
-                    <span data-feather="file-text"></span>
-                  Year-end sale
-                </a>
-                </li>
-              </ul>
+              <SideBar />
             </div>
           </nav>
 
@@ -251,7 +181,7 @@ export default function Home() {
                   <h1 className="h2">Characters</h1>
                 </div>
                 <div className="col-md-2">
-                  <SortComponent sortList={sortList} currentSortValue={currentSortValue}/>
+                  <SortComponent sortList={sortList} currentSortValue={currentSortValue} />
                 </div>
               </div>
             </div>
@@ -336,6 +266,27 @@ export default function Home() {
         .description {
     text - align: center;
   }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100; /* Behind the navbar */
+    padding: 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+  }
+  
+  .sidebar-sticky {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 48px; /* Height of navbar */
+    height: calc(100vh - 48px);
+    padding-top: .5rem;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+  }
+  
 
   // .description {
   //   line-height: 1.5;
