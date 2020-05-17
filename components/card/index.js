@@ -84,19 +84,45 @@ const CardComponent = (props) => {
           <ul className="list-group list-group-flush">
             <li className="list-group-item">
               <span>STATUS</span>
-              <span>{character.status && character.status}</span>
+              <span
+                data-toggle="tooltip"
+                data-placement="top"
+                title={character.status && character.status}
+              >
+                {character.status && character.status}
+              </span>
             </li>
             <li className="list-group-item">
               <span>SPECIES</span>
-              <span>{character.species && character.species}</span>
+              <span
+                data-toggle="tooltip"
+                data-placement="top"
+                title={character.species && character.species}
+              >
+                {character.species && character.species}
+              </span>
             </li>
             <li className="list-group-item">
               <span>GENDER</span>
-              <span>{character.gender && character.gender}</span>
+              <span
+                data-toggle="tooltip"
+                data-placement="top"
+                title={character.gender && character.gender}
+              >
+                {character.gender && character.gender}
+              </span>
             </li>
             <li className="list-group-item">
               <span>ORIGIN</span>
-              <span>
+              <span
+                data-toggle="tooltip"
+                data-placement="top"
+                title={
+                  character.origin &&
+                  character.origin.name &&
+                  character.origin.name
+                }
+              >
                 {character.origin &&
                   character.origin.name &&
                   character.origin.name}
@@ -104,7 +130,15 @@ const CardComponent = (props) => {
             </li>
             <li className="list-group-item">
               <span>LAST LOCATION</span>
-              <span>
+              <span
+                data-toggle="tooltip"
+                data-placement="top"
+                title={
+                  character.location &&
+                  character.location.name &&
+                  character.location.name
+                }
+              >
                 {character.location &&
                   character.location.name &&
                   character.location.name}
@@ -171,8 +205,10 @@ const CardComponent = (props) => {
           ul.list-group > li span:nth-child(2) {
             color: #b97623eb;
             font-size: 0.7em;
-            white-space: pre-wrap;
-            word-break: break-all;
+            white-space: nowrap;
+            // word-break: break-all;
+            overflow: hidden;
+            text-overflow: ellipsis;
             padding-left: 6em;
           }
 
