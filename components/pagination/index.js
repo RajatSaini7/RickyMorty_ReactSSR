@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 
 const Pagination = (props) => {
-    const { totalRecords = null, pageLimit = 20, pageNeighbours = 0 } = props;
+    const { totalRecords = null, pageLimit = 20, pageNeighbours = 0, currPage } = props;
     const [currentPage, setCurrentPage] = useState(1);
     const [pages, setPages] = useState([]);
     const LEFT_PAGE = 'LEFT';
@@ -25,12 +25,13 @@ const Pagination = (props) => {
 
     useEffect(() => {
         (async () => {
-        const page = await fetchPageNumbers();
-        // if (page && page.length > 0) {
+            const page = await fetchPageNumbers();
+            // if (page && page.length > 0) {
             setPages(_.cloneDeep(page));
-         })();
+            setCurrentPage(currPage);
+        })();
         // }
-    },[totalRecords,currentPage]);
+    }, [totalRecords, currentPage]);
 
     /**
      * Helper method for creating a range of numbers
@@ -141,7 +142,8 @@ const Pagination = (props) => {
 
 
     return (
-        <>
+        <>{
+            totalRecords !== 0 && totalPages !== 1 &&
             <nav aria-label="Characters Pagination">
                 <ul className="pagination">
                     {pages.map((page, index) => {
@@ -174,6 +176,7 @@ const Pagination = (props) => {
 
                 </ul>
             </nav>
+        }
             <style jsx>{`
             ul.pagination {
                 margin-top: 0;
