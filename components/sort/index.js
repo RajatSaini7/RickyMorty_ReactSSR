@@ -2,7 +2,7 @@ import React from 'react';
 
 const SortComponent = (props) => {
     const { sortList, currentSortValue } = props;
-    const defaultVal = null;
+    // const defaultVal = null;
     return (
         <>
             <select className="custom-select" value={currentSortValue} onChange={sortList}>

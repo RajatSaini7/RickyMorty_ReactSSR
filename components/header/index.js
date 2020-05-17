@@ -10,6 +10,7 @@ const Header = (props) => {
                 <form className="w-100 form-position" onSubmit={searchByName}>
                         <input type="text"
                             // value={searchInput} 
+                            defaultValue={searchInput}
                             className="form-control form-control-dark w-100"
                             onChange={searchInputFunc}
                             placeholder="Search By Name"

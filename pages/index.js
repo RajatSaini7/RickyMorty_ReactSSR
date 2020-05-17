@@ -12,6 +12,18 @@ export default function Home() {
   const [totalRecords, setTotalRecords] = useState(0);
   const [currentSortValue, setCurrentSortValue] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [ filterList, setFilterList ] = useState({
+        // tags that render are inside of 'passingTags' object.
+        passingTags: {
+          search: {
+            inputTerm: ""
+          },
+          gender: {
+          },
+          species: {
+          }
+        }
+  });
   const BASE_API = 'https://rickandmortyapi.com/api/character/';
 
   useEffect(() => {
@@ -27,6 +39,9 @@ export default function Home() {
       then((res) => {
         if (res) {
           setTotalRecords(res.data.info.count);
+          if(res.data.results.length > 0) {
+            getSpecies(res.data.results);
+          }
           // handleSort(currentSortValue,res.data.results,flag);
           // setCharactersList(_.cloneDeep(res.data.results));
           if (currentSortValue === '') {
@@ -131,6 +146,9 @@ export default function Home() {
         if (res) {
           setTotalRecords(res.data.info.count);
           setCharactersList(_.cloneDeep(res.data.results));
+          if(res.data.results.length > 0) {
+            getSpecies(res.data.results);
+          }
         }
       })
       .catch((error) => {
@@ -144,6 +162,34 @@ export default function Home() {
     if (event.target.value) {
       setSearchInput(event.target.value);
     }
+  }
+
+  const getSpecies = (dataList) => {
+     let charList = dataList;
+     let genderObj = {};
+     let speciesObj = {};
+
+     const speciesList = [...new Set(charList.map(item => item.species))];
+     const genderList = [...new Set(charList.map(item => item.gender))];
+       
+    if(speciesList.length > 0) {
+        speciesList.forEach(ele => {
+          speciesObj[ele] = false;
+        });
+    }
+    if(genderList.length > 0) {
+      genderList.forEach(ele => {
+        genderObj[ele] = false;
+       });
+   }
+
+   setFilterList(prevState => ({
+      passingTags: {
+        ...prevState.passingTags,
+        gender: genderObj,
+        species: speciesObj
+      }
+   }));
   }
 
 
@@ -169,7 +215,7 @@ export default function Home() {
 
           <nav className="col-md-2 d-none d-md-block bg-light sidebar">
             <div className="sidebar-sticky">
-              <SideBar />
+              <SideBar filterList={filterList}/>
             </div>
           </nav>
 
