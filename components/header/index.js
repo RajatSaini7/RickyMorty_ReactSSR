@@ -45,7 +45,7 @@ const Header = (props) => {
       <style jsx>
         {`
           a.navbar-brand {
-            font-size: 1.5em;
+            font-size: 1.3em;
           }
           a.navbar-brand:hover {
             color: #495057;
