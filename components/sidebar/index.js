@@ -45,11 +45,11 @@ const SideBar = (props) => {
                   <input
                     className="form-check-input"
                     type="checkbox"
-                    defaultChecked={filterList.passingTags.gender[el]}
-                    onChange={(e) => onFilterClicked(e, 'gender')}
-                    value="true"
+                    onChange={(e) => onFilterClicked(e.target.name, 'gender')}
+                    value={filterList.passingTags.gender[el]}
                     id={`gender${index}`}
                     name={el}
+                    checked={filterList.passingTags.gender[el]}
                   />
                   <label
                     className="form-check-label"
@@ -89,11 +89,11 @@ const SideBar = (props) => {
                   <input
                     className="form-check-input"
                     type="checkbox"
-                    defaultChecked={filterList.passingTags.species[el]}
-                    onChange={(e) => onFilterClicked(e, 'species')}
-                    value="true"
+                    onChange={(e) => onFilterClicked(e.target.name, 'species')}
+                    value={filterList.passingTags.species[el]}
                     id={`species${index}`}
                     name={el}
+                    checked={filterList.passingTags.species[el]}
                   />
                   <label
                     className="form-check-label"
