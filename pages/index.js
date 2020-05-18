@@ -205,6 +205,7 @@ export default function Home() {
         setTotalRecords(0);
         if (error.response.status === 404) {
           setErrorMessage('Data Not Found');
+          getSpecies([]);
         }
       });
   };
@@ -333,6 +334,10 @@ export default function Home() {
               <div className="row justify-content-between align-items-center pb-2 mb-3">
                 <div className="col-md-2">
                   <h1 className="h2">Characters</h1>
+                  {/* <div className="chip">
+                    Tag 220
+                    <i className="fa fa-search"></i>
+                  </div> */}
                 </div>
                 <div className="col-md-3">
                   <SortComponent
