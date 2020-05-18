@@ -46,22 +46,22 @@ export default function Home() {
     if (searchInput.length > 0) {
       apiPath = apiPath + `&name=${searchInput}`;
     }
-    if (
-      Object.keys(filterList) &&
-      Object.keys(filterList.passingTags).length > 0
-    ) {
-      const { gender, species } = filterList.passingTags;
-      for (let genderKey in gender) {
-        if (gender[genderKey]) {
-          apiPath = apiPath + `&gender=${genderKey}`;
-        }
-      }
-      for (let speciesKey in species) {
-        if (species[speciesKey]) {
-          apiPath = apiPath + `&species=${speciesKey}`;
-        }
-      }
-    }
+    // if (
+    //   Object.keys(filterList) &&
+    //   Object.keys(filterList.passingTags).length > 0
+    // ) {
+    //   const { gender, species } = filterList.passingTags;
+    //   for (let genderKey in gender) {
+    //     if (gender[genderKey]) {
+    //       apiPath = apiPath + `&gender=${genderKey}`;
+    //     }
+    //   }
+    //   for (let speciesKey in species) {
+    //     if (species[speciesKey]) {
+    //       apiPath = apiPath + `&species=${speciesKey}`;
+    //     }
+    //   }
+    // }
 
     return apiPath;
   };
@@ -184,7 +184,7 @@ export default function Home() {
     setCurrentPage(1);
     setCurrentSortValue('');
     setLoader(true);
-    debugger;
+
     axios
       .get(apiPath)
       .then((res) => {
@@ -198,7 +198,6 @@ export default function Home() {
         }
       })
       .catch((error) => {
-        debugger;
         setLoader(false);
         console.log(error);
         setCharactersList([]);
@@ -219,8 +218,8 @@ export default function Home() {
    */
   const getSpecies = (dataList) => {
     let charList = dataList;
-    let genderObj = {};
-    let speciesObj = {};
+    let genderObj = Object.create({});
+    let speciesObj = Object.create({});
 
     const speciesList = [...new Set(charList.map((item) => item.species))];
     const genderList = [...new Set(charList.map((item) => item.gender))];
@@ -235,7 +234,6 @@ export default function Home() {
         genderObj[ele] = false;
       });
     }
-
     setFilterList((prevState) => ({
       passingTags: {
         ...prevState.passingTags,
@@ -248,8 +246,7 @@ export default function Home() {
   /**
    * Provides functionality to filter the list when filter is clicked
    */
-  const onFilterClicked = (e, filterProp) => {
-    const name = e.target.name;
+  const onFilterClicked = (name, filterProp) => {
     setFilterList((prevState) => ({
       passingTags: {
         ...prevState.passingTags,
@@ -332,12 +329,40 @@ export default function Home() {
           >
             <div className="container">
               <div className="row justify-content-between align-items-center pb-2 mb-3">
-                <div className="col-md-2">
-                  <h1 className="h2">Characters</h1>
-                  {/* <div className="chip">
-                    Tag 220
-                    <i className="fa fa-search"></i>
-                  </div> */}
+                <div className="col-md-9 marginBtm">
+                  {Object.keys(filterList.passingTags.gender).map((el, index) =>
+                    filterList.passingTags.gender[el] ? (
+                      <div className="chip" key={`gender_${index}`}>
+                        {el}
+                        <span
+                          className="closebtn"
+                          onClick={(e) => onFilterClicked(el, 'gender')}
+                        >
+                          &times;
+                        </span>
+                      </div>
+                    ) : (
+                      <></>
+                    )
+                  )}
+
+                  {Object.keys(filterList.passingTags.species).map(
+                    (el, index) =>
+                      filterList.passingTags.species[el] ? (
+                        <div className="chip" key={`species${index}`}>
+                          {el}
+                          <span
+                            name={el}
+                            className="closebtn"
+                            onClick={(e) => onFilterClicked(el, 'species')}
+                          >
+                            &times;
+                          </span>
+                        </div>
+                      ) : (
+                        <></>
+                      )
+                  )}
                 </div>
                 <div className="col-md-3">
                   <SortComponent
@@ -496,6 +521,30 @@ export default function Home() {
     overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
   }
 
+  .chip {
+    display: inline-block;
+    padding: 0 16px;
+    height: 40px;
+    font-size: 16px;
+    line-height: 40px;
+    border-radius: 25px;
+    background-color: #f1f1f1;
+    margin-right: .3em
+  }
+
+  .closebtn {
+    padding-left: 10px;
+    color: #888;
+    font-weight: bold;
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  .closebtn:hover {
+    color: #000;
+  }
+
   @media (max-width: 767.98px) { 
     .sidebar {
       position: relative;
@@ -504,6 +553,10 @@ export default function Home() {
     .sidebar-sticky {
       top: 0px;
       height: 100%;
+    }
+
+    .marginBtm {
+      margin-bottom: 1em;
     }
    }
   `}</style>
