@@ -1,6 +1,16 @@
 import React from 'react';
 import Moment from 'moment';
 
+/**
+ * Card Component
+ *
+ * @summary
+ * Displays a card/list for the characters
+ *
+ * @param props
+ *
+ * @returns {React.FC}
+ */
 const CardComponent = (props) => {
   const { character } = props;
 
