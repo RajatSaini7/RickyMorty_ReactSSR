@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 
+/**
+ * Pagination Component
+ *
+ * @summary
+ * Provides pagination to navigate to other pages
+ *
+ * @param props
+ *
+ * @returns {React.FC}
+ */
 const Pagination = (props) => {
   const {
     totalRecords = null,
@@ -15,22 +25,12 @@ const Pagination = (props) => {
 
   const totalPages = Math.ceil(totalRecords / pageLimit);
 
-  // pageLimit = typeof pageLimit === 'number' ? pageLimit : 30;
-  // totalRecords = typeof totalRecords === 'number' ? totalRecords : 0;
-
-  // // pageNeighbours can be: 0, 1 or 2
-  // pageNeighbours = typeof pageNeighbours === 'number'
-  //     ? Math.max(0, Math.min(pageNeighbours, 2))
-  //     : 0;
-
   useEffect(() => {
     (async () => {
       const page = await fetchPageNumbers();
-      // if (page && page.length > 0) {
       setPages(_.cloneDeep(page));
       setCurrentPage(currPage);
     })();
-    // }
   }, [totalRecords, currentPage]);
 
   /**
@@ -49,11 +49,21 @@ const Pagination = (props) => {
     return range;
   };
 
+  /**
+   * Let's say we have 10 pages and we set pageNeighbours to 2
+   * Given that the current page is 6
+   * The pagination control will look like the following:
+   *
+   * (1) < {4 5} [6] {7 8} > (10)
+   *
+   * (x) => terminal pages: first and last page(always visible)
+   * [x] => represents current page
+   * {...x} => represents page neighbours
+   */
   const fetchPageNumbers = () => {
     const totalPage = totalPages;
     const currentPages = currentPage;
     const pageNeighbour = pageNeighbours;
-    // debugger;
 
     /**
      * totalNumbers: the total page numbers to show on the control
@@ -106,6 +116,9 @@ const Pagination = (props) => {
     return range(1, totalPage);
   };
 
+  /**
+   * Navigating to other page
+   */
   const gotoPage = (page) => {
     const currentPage = Math.max(0, Math.min(page, totalPages));
 
@@ -119,16 +132,25 @@ const Pagination = (props) => {
     props.onPageChanged(paginationData);
   };
 
+  /**
+   * Provides functionality when click on page number
+   */
   const handleClick = (page) => (evt) => {
     evt.preventDefault();
     gotoPage(page);
   };
 
+  /**
+   * Provides functionality when click on previous arrow
+   */
   const handleMoveLeft = (evt) => {
     evt.preventDefault();
     gotoPage(currentPage - pageNeighbours * 2 - 1);
   };
 
+  /**
+   * Provides functionality when click on forward number
+   */
   const handleMoveRight = (evt) => {
     evt.preventDefault();
     gotoPage(currentPage + pageNeighbours * 2 + 1);

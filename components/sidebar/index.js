@@ -1,11 +1,17 @@
 import React, { useEffect } from 'react';
 
+/**
+ * SideBar Component
+ *
+ * @summary
+ * Displays a sidebarhaving filter functionality
+ *
+ * @param props
+ *
+ * @returns {React.FC}
+ */
 const SideBar = (props) => {
   const { filterList, onFilterClicked } = props;
-
-  useEffect(() => {
-    console.log(filterList, 'filterList');
-  }, [filterList]);
 
   return (
     <>
@@ -121,25 +127,6 @@ const SideBar = (props) => {
           overflow: hidden;
           word-break: break-word;
         }
-        //   .nav .nav-link {
-        //     font-weight: 500;
-        //     color: #333;
-        //   }
-
-        //   .nav .nav-link .feather {
-        //     margin-right: 4px;
-        //     color: #999;
-        //   }
-
-        //   .nav .nav-link.active {
-        //     color: #007bff;
-        //   }
-
-        //   .nav .nav-link:hover .feather,
-        //   .nav .nav-link.active .feather {
-        //     color: inherit;
-        //   }
-
         .sidebar-heading {
           font-size: 1.2rem;
           text-transform: uppercase;
