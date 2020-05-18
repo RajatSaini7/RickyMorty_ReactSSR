@@ -32,6 +32,7 @@ export default function Home() {
   });
   const BASE_API = 'https://rickandmortyapi.com/api/character/';
   const [loader, setLoader] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('Data Not Found');
 
   useEffect(() => {
     getCharactersList(1);
@@ -93,6 +94,9 @@ export default function Home() {
         console.log(error);
         setCharactersList([]);
         setTotalRecords(0);
+        if (error.response.status === 404) {
+          setErrorMessage('Data Not Found');
+        }
       });
   };
 
@@ -162,6 +166,9 @@ export default function Home() {
         console.log(error);
         setCharactersList([]);
         setTotalRecords(0);
+        if (error.response.status === 404) {
+          setErrorMessage('Data Not Found');
+        }
       });
   };
 
@@ -177,6 +184,7 @@ export default function Home() {
     setCurrentPage(1);
     setCurrentSortValue('');
     setLoader(true);
+    debugger;
     axios
       .get(apiPath)
       .then((res) => {
@@ -190,10 +198,14 @@ export default function Home() {
         }
       })
       .catch((error) => {
+        debugger;
         setLoader(false);
         console.log(error);
         setCharactersList([]);
         setTotalRecords(0);
+        if (error.response.status === 404) {
+          setErrorMessage('Data Not Found');
+        }
       });
   };
 
@@ -333,7 +345,7 @@ export default function Home() {
 
             <div className="container">
               <div className="row">
-                {totalRecords > 0 &&
+                {totalRecords > 0 ? (
                   charactersList
                     .filter((el) => {
                       const obj = filterClientSideData();
@@ -352,7 +364,10 @@ export default function Home() {
                     })
                     .map((character) => (
                       <CardComponent key={character.id} character={character} />
-                    ))}
+                    ))
+                ) : (
+                  <h3>{errorMessage}</h3>
+                )}
               </div>
               <div className="row pagination-row">
                 <div className="col-md-12">
